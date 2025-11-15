@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador LL(1)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Analisador Preditivo LL(1)</h1>
+    </header>
+
+    <main>
+        <section class="info-section">
+            <div class="info-box">
+                <h2>Gramática (G)</h2>
+                <pre id="grammar-display"></pre>
+            </div>
+            <div class="info-box">
+                <h2>Conjuntos FIRST</h2>
+                <pre id="first-display"></pre>
+            </div>
+            <div class="info-box">
+                <h2>Conjuntos FOLLOW</h2>
+                <pre id="follow-display"></pre>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h2>Tabela de Parsing (M)</h2>
+            <div id="parsing-table-wrapper" class="table-container">
+                </div>
+            <button id="reset-button" class="reset-button">Limpar Análise</button>
+        </section>
+
+        <section class="interactive-section">
+            <h2>Analisador (Fita de Entrada)</h2>
+            <div class="input-area">
+                <input type="text" id="sentence-input" placeholder="Digite a sentença ou gere clicando na tabela">
+                <button id="parse-button">Analisar</button>
+            </div>
+            <div class="result-area">
+                <h3>Resultado:</h3>
+                <div id="result-message" class="message"></div>
+            </div>
+        </section>
+
+        <section class="trace-section">
+            <h2>Traço de Execução da Pilha</h2>
+            <div id="trace-display" class="table-container">
+                 </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

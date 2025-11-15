@@ -1,0 +1,228 @@
+/* --- Configurações Globais --- */
+:root {
+    --bg-color: #f4f7f6;
+    --text-color: #333;
+    --primary-color: #007bff;
+    --header-color: #4a90e2;
+    --border-color: #ddd;
+    --table-header: #f9f9f9;
+    --error-color: #d9534f;
+    --success-color: #5cb85c;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--header-color);
+    color: white;
+    padding: 20px 40px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+h2 {
+    color: var(--header-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+/* --- Layout das Seções de Informação (Gramática, Tabela) --- */
+.info-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-section > h2,
+.info-section > .table-container,
+.trace-section > h2,
+.trace-section > .table-container,
+.info-section > .reset-button {
+    grid-column: 1 / -1; /* Ocupa a largura total */
+}
+
+.info-box pre {
+    background: #fdfdfd;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    white-space: pre-wrap;
+    font-family: "Courier New", Courier, monospace;
+}
+
+/* --- Layout do Analisador por Texto --- */
+.interactive-section .input-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#sentence-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Layout dos Resultados e Mensagens --- */
+.result-area .message {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    line-height: 1.5; /* Espaçamento de linha */
+}
+
+/* Novo estilo para a sentença no resultado unificado */
+.result-sentence {
+    font-size: 0.8em;
+    font-weight: normal;
+    font-family: "Courier New", Courier, monospace;
+    opacity: 0.9;
+}
+
+.message.success {
+    background-color: #e6f7e6;
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.message.error {
+    background-color: #fdeeee;
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+
+/* --- Estilos das Tabelas (Parsing e Traço) --- */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 10px 12px;
+    text-align: left;
+    font-family: "Courier New", Courier, monospace;
+}
+
+th {
+    background-color: var(--table-header);
+    font-weight: bold;
+}
+
+td.production {
+    font-weight: bold;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+td.production:hover {
+    background-color: #f0f8ff;
+}
+
+/* --- Estilos da Tabela de Parsing Interativa --- */
+#parsing-table-wrapper table {
+    table-layout: fixed;
+    width: 100%;
+}
+#parsing-table-wrapper th:first-child,
+#parsing-table-wrapper td:first-child {
+    width: 60px;
+    text-align: center;
+}
+#parsing-table-wrapper td.production {
+    text-align: center;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+
+/* Linha destacada */
+#parsing-table-body tr.highlight-row {
+    background-color: #e6f7ff;
+}
+#parsing-table-body tr.highlight-row td:first-child strong {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Botão de Reset Interativo */
+.reset-button {
+    background-color: var(--error-color);
+    margin-top: 15px;
+    padding: 10px 20px;
+    display: block;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.reset-button:hover {
+    background-color: #c9302c;
+}
+
+/* --- Estilos das Melhorias de UI --- */
+
+/* Células de erro clicáveis */
+#parsing-table-body td.error {
+    color: #f2f2f2;
+    cursor: not-allowed;
+}
+#parsing-table-body tr.highlight-row td.error:hover {
+    background-color: #fdeeee;
+    color: var(--error-color);
+    cursor: pointer;
+}
+#parsing-table-body tr.highlight-row td.error::after {
+    content: "ERRO";
+}
+
+/* Campos de texto desabilitados */
+#sentence-input:disabled,
+#parse-button:disabled {
+    background-color: #f4f7f6;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
