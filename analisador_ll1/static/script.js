@@ -1,34 +1,60 @@
 // --- Variáveis Globais de Estado ---
-let G_DATA = {};
+const G_DATA = {
+    grammar: {
+        "S": ["A d"],
+        "A": ["a B", "c D", "d S"],
+        "B": ["b C", "d D"],
+        "C": ["c A", "ε"],
+        "D": ["a B"]
+    },
+    first: {
+        "S": ["a", "c", "d"],
+        "A": ["a", "c", "d"],
+        "B": ["b", "d"],
+        "C": ["c", "ε"],
+        "D": ["a"]
+    },
+    follow: {
+        "S": ["$", "d"],
+        "A": ["d"],
+        "B": ["d"],
+        "C": ["d"],
+        "D": ["d"]
+    },
+    table: {
+        "S": {"a": "A d", "b": "erro", "c": "A d", "d": "A d", "$": "erro"},
+        "A": {"a": "a B", "b": "erro", "c": "c D", "d": "d S", "$": "erro"},
+        "B": {"a": "erro", "b": "b C", "c": "erro", "d": "d D", "$": "erro"},
+        "C": {"a": "erro", "b": "erro", "c": "c A", "d": "ε",   "$": "erro"},
+        "D": {"a": "a B", "b": "erro", "c": "erro", "d": "erro", "$": "erro"}
+    }
+};
+
 let interactiveStack = [];
 let interactiveTrace = [];
-let interactiveSentence = ""; // Armazena a sentença do modo interativo
+let interactiveSentence = "";
 
 // --- Inicialização ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadGrammarData();
-    document.getElementById('parse-button').addEventListener('click', handleParseFromText);
-    document.getElementById('reset-button').addEventListener('click', initializeUI);
-});
-
-async function loadGrammarData() {
+    // Renderiza os dados estáticos da gramática
     try {
-        const response = await fetch('/api/grammar_data');
-        const data = await response.json();
-        G_DATA = data; 
-
-        renderGrammar(data.grammar);
-        renderSet(data.first, document.getElementById('first-display'));
-        renderSet(data.follow, document.getElementById('follow-display'));
-        renderParsingTable(data.table, data.first);
+        renderGrammar(G_DATA.grammar);
+        renderSet(G_DATA.first, document.getElementById('first-display'));
+        renderSet(G_DATA.follow, document.getElementById('follow-display'));
+        renderParsingTable(G_DATA.table, G_DATA.first);
         
         attachTableListeners();
         initializeUI(); // Prepara a UI no carregamento
 
     } catch (error) {
-        console.error('Erro ao carregar dados da gramática:', error);
+        console.error('Erro ao inicializar a aplicação:', error);
     }
-}
+
+    // Adiciona os listeners de controle
+    document.getElementById('parse-button').addEventListener('click', handleParseFromText);
+    document.getElementById('reset-button').addEventListener('click', initializeUI);
+});
 
 // --- MODO 1: ANÁLISE POR TEXTO (Clique em "Analisar") ---
 
@@ -39,13 +65,12 @@ async function loadGrammarData() {
 function handleParseFromText() {
     const sentence = document.getElementById('sentence-input').value;
     const inputSymbols = sentence.replace(/\s+/g, '').split('');
-    inputSymbols.push('$'); // Adiciona $ no fim da fita
+    inputSymbols.push('$');
     
     let stack = ['$', 'S'];
     let trace = [];
     let steps = 0;
 
-    // Função interna para formatar estado
     const getStackStr = (s) => [...s].reverse().join(' ');
     const getInputStr = (i) => i.join('');
 
@@ -56,10 +81,9 @@ function handleParseFromText() {
         action: "Inicialização"
     });
 
-    // Loop principal do analisador preditivo
     while (stack.length > 0) {
         steps++;
-        const topOfStack = stack[stack.length - 1]; // Pega o topo (peek)
+        const topOfStack = stack[stack.length - 1];
         const currentInput = inputSymbols[0];
         
         let action = "";
@@ -74,16 +98,14 @@ function handleParseFromText() {
                 return;
             }
             
-            // CORREÇÃO: Trocado f"" por ``
             action = `Match '${currentInput}'`;
             stack.pop();
-            inputSymbols.shift(); // Consome da fita
+            inputSymbols.shift();
             
         } else if (G_DATA.table[topOfStack]) { // É um Não-Terminal
             const production = G_DATA.table[topOfStack][currentInput];
             
             if (production === 'erro' || !production) {
-                // CORREÇÃO: Trocado f"" por ``
                 action = `Erro: M[${topOfStack}, ${currentInput}] é inválido.`;
                 trace.push({step: steps, stack: getStackStr(stack), input: getInputStr(inputSymbols), action: action});
                 renderResult("Rejeitado", steps, sentence);
@@ -92,20 +114,17 @@ function handleParseFromText() {
                 return;
             }
             
-            stack.pop(); // Remove N-T
+            stack.pop();
             
             if (production !== "ε") {
                 const symbolsToPush = production.split(' ').reverse();
                 symbolsToPush.forEach(symbol => stack.push(symbol));
-                // CORREÇÃO: Trocado f"" por ``
                 action = `Produção: ${topOfStack} ::= ${production}`;
             } else {
-                // CORREÇÃO: Trocado f"" por ``
                 action = `Produção: ${topOfStack} ::= ε`;
             }
         
         } else { // Erro de match de terminais
-            // CORREÇÃO: Trocado f"" por ``
             action = `Erro: Esperava '${topOfStack}' mas encontrou '${currentInput}'`;
             trace.push({step: steps, stack: getStackStr(stack), input: getInputStr(inputSymbols), action: action});
             renderResult("Rejeitado", steps, sentence);
@@ -134,10 +153,10 @@ function initializeUI() {
     interactiveSentence = "";
     
     clearTraceAndResult();
-    document.getElementById('sentence-input').value = ""; // Limpa a fita
+    document.getElementById('sentence-input').value = "";
     
     addInteractiveTraceStep("Inicialização");
-    renderInteractiveTraceTable(); // Mostra o traço de 3 colunas
+    renderInteractiveTraceTable();
     highlightCurrentRow();
 }
 
@@ -162,7 +181,6 @@ function attachTableListeners() {
              addInteractiveTraceStep("Inicialização");
         }
 
-        // Célula de Erro
         if (cell.classList.contains('error')) {
             const nonTerminal = cell.dataset.nt;
             const terminal = cell.dataset.terminal;
@@ -170,7 +188,6 @@ function attachTableListeners() {
             return;
         }
         
-        // Célula de Produção
         if (cell.classList.contains('production')) {
             const production = cell.dataset.prod;
             processInteractiveStep(production);
@@ -192,13 +209,13 @@ function processInteractiveStep(production) {
 
     while (interactiveStack.length > 0) {
         const topOfStack = interactiveStack[interactiveStack.length - 1];
-        if (G_DATA.grammar[topOfStack]) break; // Para se for Não-Terminal
+        if (G_DATA.grammar[topOfStack]) break;
 
-        interactiveStack.pop(); // Consome
+        interactiveStack.pop();
         
         if (topOfStack !== '$') {
             addInteractiveTraceStep(`Match (Geração): '${topOfStack}'`);
-            interactiveSentence += topOfStack; // Constrói a sentença
+            interactiveSentence += topOfStack;
         } else {
             addInteractiveTraceStep("Match $ e $ - ACEITAR");
             const finalSentence = interactiveSentence.split('').join(' ');
@@ -207,9 +224,7 @@ function processInteractiveStep(production) {
         }
     }
     
-    // Atualiza a caixa de texto (fita de entrada)
     document.getElementById('sentence-input').value = interactiveSentence.split('').join(' ');
-    
     renderInteractiveTraceTable();
     highlightCurrentRow();
 }
@@ -381,4 +396,4 @@ function highlightCurrentRow() {
             }
         }
     }
-}   
+}

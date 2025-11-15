@@ -108,10 +108,9 @@ button:hover {
     padding: 10px;
     border-radius: 5px;
     margin-top: 10px;
-    line-height: 1.5; /* Espaçamento de linha */
+    line-height: 1.5;
 }
 
-/* Novo estilo para a sentença no resultado unificado */
 .result-sentence {
     font-size: 0.8em;
     font-weight: normal;
@@ -217,12 +216,4 @@ td.production:hover {
 }
 #parsing-table-body tr.highlight-row td.error::after {
     content: "ERRO";
-}
-
-/* Campos de texto desabilitados */
-#sentence-input:disabled,
-#parse-button:disabled {
-    background-color: #f4f7f6;
-    opacity: 0.6;
-    cursor: not-allowed;
 }
